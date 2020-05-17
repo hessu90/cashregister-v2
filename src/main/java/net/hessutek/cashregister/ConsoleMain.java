@@ -18,6 +18,7 @@ public class ConsoleMain {
         DBHandler db = new DBHandler("MainDB.db");
         String[] groups = db.getGroups().toArray(new String[0]);
         System.out.println(groups[0]);
+        db.saveUserData(1234567, "kissa", 3);
         
         
         

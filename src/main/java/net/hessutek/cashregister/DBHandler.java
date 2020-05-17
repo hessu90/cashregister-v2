@@ -107,19 +107,33 @@ public class DBHandler {
 
         String sql = "SELECT * FROM Groups";
         ArrayList<String> groups = new ArrayList<String>();
-        
-        
 
         try (Connection conn = this.connect();
                 Statement stmt = conn.createStatement();
                 ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
-               groups.add(rs.getString("Privilege") + " -- " + rs.getString("GroupName"));
+                groups.add(rs.getString("Privilege") + " -- " + rs.getString("GroupName"));
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
 
         return groups;
+    }
+
+    public boolean saveUserData(long cardNo, String userName, int groupID) {
+        String sql = "INSERT INTO Users(Name,CardNo,GroupID) VALUES(?,?,?)";
+
+        try (Connection conn = this.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, userName);
+            pstmt.setLong(2, cardNo);
+            pstmt.setInt(3, groupID);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return false;
     }
 }
