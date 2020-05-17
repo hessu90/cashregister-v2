@@ -16,6 +16,7 @@ public class ConsoleMain {
      */
     public static void main(String[] args) {
         System.out.println((new Rfid("Read.py")).read());
+        System.out.println("hello");
         
         
         
