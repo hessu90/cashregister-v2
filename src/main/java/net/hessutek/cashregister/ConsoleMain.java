@@ -15,7 +15,9 @@ public class ConsoleMain {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        System.out.println((new Rfid("Read.py")).read());
+        DBHandler db = new DBHandler("MainDB.db");
+        String[] groups = db.getGroups().toArray(new String[0]);
+        System.out.println(groups[0]);
         
         
         

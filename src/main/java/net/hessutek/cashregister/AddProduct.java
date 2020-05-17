@@ -102,6 +102,7 @@ public class AddProduct extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Tuotteen lisäys");
         setLocation(new java.awt.Point(0, 0));
+        setUndecorated(true);
         setResizable(false);
 
         EAN.setEnabled(false);

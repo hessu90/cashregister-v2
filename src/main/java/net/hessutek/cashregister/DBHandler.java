@@ -6,6 +6,7 @@
 package net.hessutek.cashregister;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 /**
  *
@@ -95,5 +96,30 @@ public class DBHandler {
             System.out.println(e.getMessage());
         }
         return new Price(price);
+    }
+
+    public String getUserName(long cardNo) {
+
+        return null;
+    }
+
+    public ArrayList<String> getGroups() {
+
+        String sql = "SELECT * FROM Groups";
+        ArrayList<String> groups = new ArrayList<String>();
+        
+        
+
+        try (Connection conn = this.connect();
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+               groups.add(rs.getString("Privilege") + " -- " + rs.getString("GroupName"));
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return groups;
     }
 }

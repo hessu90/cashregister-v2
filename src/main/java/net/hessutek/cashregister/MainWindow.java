@@ -5,13 +5,11 @@
  */
 package net.hessutek.cashregister;
 
-import java.awt.Component;
 import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import javax.swing.DefaultListModel;
-import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.ListModel;
 
@@ -198,6 +196,11 @@ public class MainWindow extends javax.swing.JFrame {
         });
 
         stock.setText("Varasto");
+        stock.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                stockActionPerformed(evt);
+            }
+        });
 
         cardpayment.setText("Korttimaksu");
         cardpayment.addActionListener(new java.awt.event.ActionListener() {
@@ -486,36 +489,52 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_cardpaymentActionPerformed
 
     private void addproductActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addproductActionPerformed
-        
+
         long EAN = 0;
         try {
             EAN = Long.parseLong(this.EAN.getText());
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
-        
+
         if (EAN == 0) {
             this.warnings.setText("INVALIIDI EAN");
             return;
         }
         JDialog dlg = new AddProduct(this, true, EAN);
+
+        if (!System.getProperty("os.name").toLowerCase().contains("windows")) {
+            dlg.setSize(Toolkit.getDefaultToolkit().getScreenSize());
+        }
         dlg.setVisible(true);
-        
+
         this.addproduct.setEnabled(false);
         this.EAN.setText("");
         this.warnings.setText("");
         this.EAN.requestFocus();
-        
+
     }//GEN-LAST:event_addproductActionPerformed
 
     private void adminActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_adminActionPerformed
+        if (this.EAN.getText().contains("999")) {
+            System.exit(0);
+        }
         JDialog dlg = new UserHandlerDlg(this, true);
+        if (!System.getProperty("os.name").toLowerCase().contains("windows")) {
+            dlg.setSize(Toolkit.getDefaultToolkit().getScreenSize());
+        }
         dlg.setVisible(true);
+
         this.addproduct.setEnabled(false);
         this.EAN.setText("");
         this.warnings.setText("");
         this.EAN.requestFocus();
     }//GEN-LAST:event_adminActionPerformed
+
+    private void stockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stockActionPerformed
+
+
+    }//GEN-LAST:event_stockActionPerformed
 
     /**
      * @param args the command line arguments

@@ -7,6 +7,7 @@ package net.hessutek.cashregister;
 
 import java.awt.Component;
 import java.awt.Toolkit;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -28,9 +29,8 @@ public class UserHandlerDlg extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         this.shift = true;
-        if (!System.getProperty("os.name").toLowerCase().contains("windows")) {
-            this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
-        }
+        this.name.requestFocus();
+        
     }
 
     /**
@@ -97,11 +97,14 @@ public class UserHandlerDlg extends javax.swing.JDialog {
         savebut = new javax.swing.JButton();
         exitbut = new javax.swing.JButton();
         emptyFields = new javax.swing.JButton();
-        groupSelector = new javax.swing.JComboBox<>();
+        DBHandler db = new DBHandler("MainDB.db");
+        String[] groups = db.getGroups().toArray(new String[0]);
+        groupSelector = new javax.swing.JComboBox<>(groups);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Käyttäjähallinta");
         setLocation(new java.awt.Point(0, 0));
+        setUndecorated(true);
         setResizable(false);
 
         jButton7.setText("j");
@@ -741,6 +744,7 @@ public class UserHandlerDlg extends javax.swing.JDialog {
 
     private void emptyFieldsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_emptyFieldsActionPerformed
         this.name.setText("");
+        this.cardNo.setText("");
         this.groupSelector.setSelectedIndex(-1);
         this.name.requestFocus();
     }//GEN-LAST:event_emptyFieldsActionPerformed
@@ -812,7 +816,7 @@ public class UserHandlerDlg extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-
+                    
             }
         });
     }
