@@ -37,8 +37,7 @@ public class DBHandler {
     public long getSKU(long EAN) {
         String sql = "SELECT SKU FROM EAN WHERE EAN=?";
         long SKU = 0;
-        try (Connection conn = this.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try ( Connection conn = this.connect();  PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setLong(1, EAN);
             ResultSet rs = pstmt.executeQuery();
@@ -60,8 +59,7 @@ public class DBHandler {
     public String getProductName(long SKU) {
         String sql = "SELECT ProductName FROM Products WHERE SKU=?";
         String tuote = null;
-        try (Connection conn = this.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try ( Connection conn = this.connect();  PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setLong(1, SKU);
             ResultSet rs = pstmt.executeQuery();
@@ -84,8 +82,7 @@ public class DBHandler {
         long SKU = this.getSKU(EAN);
         String sql = "SELECT Price FROM Products WHERE SKU=?";
         Double price = 0.00;
-        try (Connection conn = this.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try ( Connection conn = this.connect();  PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setLong(1, SKU);
             ResultSet rs = pstmt.executeQuery();
@@ -99,8 +96,19 @@ public class DBHandler {
     }
 
     public String getUserName(long cardNo) {
+        String sql = "SELECT Name FROM Users WHERE CardNo=?";
+        String userName = "";
 
-        return null;
+        try ( Connection conn = this.connect();  PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setLong(1, cardNo);
+            ResultSet rs = pstmt.executeQuery();
+            userName = rs.getString("Name");
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return userName;
     }
 
     public ArrayList<String> getGroups() {
@@ -108,9 +116,7 @@ public class DBHandler {
         String sql = "SELECT * FROM Groups";
         ArrayList<String> groups = new ArrayList<String>();
 
-        try (Connection conn = this.connect();
-                Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(sql)) {
+        try ( Connection conn = this.connect();  Statement stmt = conn.createStatement();  ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 groups.add(rs.getString("Privilege") + " -- " + rs.getString("GroupName"));
             }
@@ -122,18 +128,38 @@ public class DBHandler {
     }
 
     public boolean saveUserData(long cardNo, String userName, int groupID) {
-        String sql = "INSERT INTO Users(Name,CardNo,GroupID) VALUES(?,?,?)";
+        String sql = "";
+        if (this.getUserName(cardNo).length() == 0) {
+            sql = "INSERT INTO Users(Name,CardNo,GroupID) VALUES(?,?,?)";
+        } else {
+            sql = "UPDATE Users SET Name = ? , GroupID = ? WHERE CardNo = ?";
+        }
 
-        try (Connection conn = this.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try ( Connection conn = this.connect();  PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, userName);
-            pstmt.setLong(2, cardNo);
-            pstmt.setInt(3, groupID);
+            pstmt.setInt(2, groupID);
+            pstmt.setLong(3, cardNo);
             pstmt.executeUpdate();
+            return true;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    public int getUserGroup(long cardNo) {
+        int groupID = -1;
+        String sql = "SELECT GroupID FROM Users WHERE CardNo=?";
+        try ( Connection conn = this.connect();  PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setLong(1, cardNo);
+            ResultSet rs = pstmt.executeQuery();
+            groupID = rs.getInt("GroupID");
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
 
-        return false;
+        return groupID;
     }
+
 }

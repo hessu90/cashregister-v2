@@ -8,6 +8,7 @@ package net.hessutek.cashregister;
 import java.awt.Component;
 import java.awt.Toolkit;
 import java.util.ArrayList;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -24,12 +25,14 @@ public class UserHandlerDlg extends javax.swing.JDialog {
      */
     private JTextField selectedField;
     private boolean shift;
+    private DBHandler db;
 
     public UserHandlerDlg(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         this.shift = true;
         this.name.requestFocus();
+        this.db = new DBHandler("MainDB.db");
 
     }
 
@@ -770,33 +773,53 @@ public class UserHandlerDlg extends javax.swing.JDialog {
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
-        DBHandler db = new DBHandler("MainDB.db");
-        
+
         long cardNo = Long.parseLong(this.cardNo.getText());
         String userName = this.name.getText();
         int groupID = this.groupSelector.getSelectedIndex() + 1;
-        db.saveUserData(cardNo, userName, groupID);
-        
+        boolean saved = db.saveUserData(cardNo, userName, groupID);
+
+        if (saved) {
+            JOptionPane.showMessageDialog(this,
+                    "Tiedot tallennettu :)",
+                    "Tallennus",
+                    JOptionPane.INFORMATION_MESSAGE);
+            emptyFieldsActionPerformed(evt);
+            return;
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "Tallennus epäonnistui :(",
+                    "Tallennus",
+                    JOptionPane.WARNING_MESSAGE);
+        }
+
+
     }//GEN-LAST:event_savebutActionPerformed
 
     private void readCardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_readCardActionPerformed
         ExecuteCommand mw = new ExecuteCommand();
         MainWindow main = new MainWindow();
         CardDlg dlg = new CardDlg(main, true, mw);
-        dlg.setVisible(shift);
 
         long cardID;
         try {
             cardID = mw.get();
-        } catch (InterruptedException | ExecutionException ex) {
+        } catch (InterruptedException | ExecutionException | CancellationException ex) {
             cardID = 0;
         }
         if (cardID > 0) {
             this.cardNo.setText(cardID + "");
         } else {
-            JOptionPane.showMessageDialog(main, "Korttivirhe, yritä uudelleen...", "Korttivirhe", 2);
+            JOptionPane.showMessageDialog(this,
+                    "Korttivirhe, yritä uudelleen",
+                    "Korttivirhe",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
         }
+        this.name.setText(db.getUserName(cardID));
+        this.groupSelector.setSelectedIndex(db.getUserGroup(cardID) - 1);
+
+
     }//GEN-LAST:event_readCardActionPerformed
 
     private void focusGainedField(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_focusGainedField
