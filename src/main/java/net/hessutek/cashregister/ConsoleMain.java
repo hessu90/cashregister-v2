@@ -16,8 +16,7 @@ public class ConsoleMain {
      */
     public static void main(String[] args) {
         DBHandler db = new DBHandler("MainDB.db");
-        int test = db.getPrivilege(Long.parseLong("990390461325"));
-        System.out.println(test);
+        db.saveProductData(1234, "kissa", new Price(12,12), new Price(99,99));
         
     }
     

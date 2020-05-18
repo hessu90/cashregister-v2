@@ -140,6 +140,7 @@ public class DBHandler {
             pstmt.setInt(2, groupID);
             pstmt.setLong(3, cardNo);
             pstmt.executeUpdate();
+
             return true;
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -166,8 +167,7 @@ public class DBHandler {
         int privilegeNo = -1;
 
         String sql = "SELECT Privilege FROM Groups, Users WHERE Users.CardNo=? AND Users.GroupID=Groups.ID";
-        try ( Connection conn = this.connect();  
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try ( Connection conn = this.connect();  PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setLong(1, cardNo);
             ResultSet rs = pstmt.executeQuery();
             privilegeNo = rs.getInt("Privilege");
@@ -179,7 +179,47 @@ public class DBHandler {
         return privilegeNo;
 
     }
-    
+
+    public boolean saveProductData(long EAN, String productName, Price purchPrice, Price sellPrice) {
+
+        String sql = "INSERT INTO Products(ProductName, PurchacePrice, Price) VALUES(?,?,?)";
+        String sqlEAN = "INSERT INTO EAN(SKU, EAN) VALUES(?,?)";
+        long SKU = 0;
+        double pPrice = Double.parseDouble(purchPrice.toString());
+        double sPrice = Double.parseDouble(sellPrice.toString());
+        
+        
+        try ( Connection conn = this.connect();  
+                PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setString(1, productName);
+            pstmt.setDouble(2, pPrice);
+            pstmt.setDouble(3, sPrice);
+            pstmt.executeUpdate();
+            ResultSet rs = pstmt.getGeneratedKeys();
+            SKU = rs.getLong(1);
+            
+        } catch(SQLException ex) {
+            System.out.println(ex.getMessage());
+            SKU = -1;
+        }
+        
+        if (SKU == -1) {
+            return false;
+        }
+        
+        try ( Connection conn = this.connect();  
+                PreparedStatement pstmt = conn.prepareStatement(sqlEAN, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setLong(1, SKU);
+            pstmt.setLong(2, EAN);
+            pstmt.executeUpdate();
+            
+        } catch(SQLException ex) {
+            System.out.println(ex.getMessage());
+            return false;
+        }
+        
+        return true;
+    }
     
     
 

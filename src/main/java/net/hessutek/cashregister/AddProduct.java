@@ -801,11 +801,17 @@ public class AddProduct extends javax.swing.JDialog {
                         "Ei oikeuksia",
                         JOptionPane.WARNING_MESSAGE);
                 this.exitbutActionPerformed(evt);
+                return;
             }
-            
+            db.saveProductData(Long.parseLong(EAN.getText()), productName.getText(), pPrice, sPrice);
+            JOptionPane.showMessageDialog(this,
+                        "Tuote lisätty :)",
+                        "Tallennettu",
+                        JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(main, "Korttivirhe, yritä uudelleen...", "Korttivirhe", 2);
         }
+        this.exitbutActionPerformed(evt);
 
     }//GEN-LAST:event_savebutActionPerformed
 
