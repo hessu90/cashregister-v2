@@ -27,7 +27,7 @@ public class DBHandler {
 
             String url = "jdbc:sqlite:" + this.dbPath;
             conn = DriverManager.getConnection(url);
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
 
@@ -114,7 +114,7 @@ public class DBHandler {
     public ArrayList<String> getGroups() {
 
         String sql = "SELECT * FROM Groups";
-        ArrayList<String> groups = new ArrayList<String>();
+        ArrayList<String> groups = new ArrayList<>();
 
         try ( Connection conn = this.connect();  Statement stmt = conn.createStatement();  ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
@@ -130,7 +130,7 @@ public class DBHandler {
     public boolean saveUserData(long cardNo, String userName, int groupID) {
         String sql = "";
         if (this.getUserName(cardNo).length() == 0) {
-            sql = "INSERT INTO Users(Name,CardNo,GroupID) VALUES(?,?,?)";
+            sql = "INSERT INTO Users(Name, GroupID, CardNo) VALUES(?,?,?)";
         } else {
             sql = "UPDATE Users SET Name = ? , GroupID = ? WHERE CardNo = ?";
         }
@@ -161,5 +161,26 @@ public class DBHandler {
 
         return groupID;
     }
+
+    public int getPrivilege(long cardNo) {
+        int privilegeNo = -1;
+
+        String sql = "SELECT Privilege FROM Groups, Users WHERE Users.CardNo=? AND Users.GroupID=Groups.ID";
+        try ( Connection conn = this.connect();  
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setLong(1, cardNo);
+            ResultSet rs = pstmt.executeQuery();
+            privilegeNo = rs.getInt("Privilege");
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return privilegeNo;
+
+    }
+    
+    
+    
 
 }

@@ -11,6 +11,7 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import javax.swing.DefaultListModel;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.ListModel;
 
 /**
@@ -24,10 +25,12 @@ public class MainWindow extends javax.swing.JFrame {
      */
     private ArrayList<Product> productList;
     private ExecuteCommand mw;
+    private DBHandler db;
 
     public MainWindow() {
         initComponents();
         this.EAN.requestFocus();
+        this.db = new DBHandler("MainDB.db");
         this.productList = new ArrayList<>();
     }
 
@@ -421,7 +424,7 @@ public class MainWindow extends javax.swing.JFrame {
         this.addproduct.setEnabled(false);
         this.warnings.setText("");
 
-        DBHandler db = new DBHandler("MainDB.db");
+        
 
         long EAN = 0;
 
@@ -519,6 +522,28 @@ public class MainWindow extends javax.swing.JFrame {
         if (this.EAN.getText().contains("999")) {
             System.exit(0);
         }
+        
+        mw = new ExecuteCommand();
+        CardDlg cardDlg = new CardDlg(this, true, mw);
+        cardDlg.setVisible(true);
+        long id = 0;
+        try {
+            id = mw.get();
+        } catch (InterruptedException | ExecutionException | CancellationException ex) {
+            id = 0;
+            return;
+        }
+        
+        if (db.getPrivilege(id) != 999) {
+            JOptionPane.showMessageDialog(this,
+                    "Ei oikeuksia admin paneeliin :(",
+                    "Ei oikeuksia",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        
+        
+        
         JDialog dlg = new UserHandlerDlg(this, true);
         if (!System.getProperty("os.name").toLowerCase().contains("windows")) {
             dlg.setSize(Toolkit.getDefaultToolkit().getScreenSize());

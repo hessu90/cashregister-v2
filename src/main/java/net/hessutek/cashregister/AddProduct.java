@@ -25,10 +25,12 @@ public class AddProduct extends javax.swing.JDialog {
      */
     private JTextField selectedField;
     private boolean shift;
+    private DBHandler db;
 
     public AddProduct(java.awt.Frame parent, boolean modal, long EAN) {
         super(parent, modal);
         initComponents();
+        this.db = new DBHandler("MainDB.db");
         this.productName.requestFocus();
         this.shift = true;
         this.EAN.setText(EAN + "");
@@ -793,7 +795,14 @@ public class AddProduct extends javax.swing.JDialog {
             cardID = 0;
         }
         if (cardID > 0) {
-            this.exitbutActionPerformed(evt);
+            if (db.getPrivilege(cardID) != 999) {
+                JOptionPane.showMessageDialog(this,
+                        "Ei oikeuksia lisätä tuotetta :(",
+                        "Ei oikeuksia",
+                        JOptionPane.WARNING_MESSAGE);
+                this.exitbutActionPerformed(evt);
+            }
+            
         } else {
             JOptionPane.showMessageDialog(main, "Korttivirhe, yritä uudelleen...", "Korttivirhe", 2);
         }
