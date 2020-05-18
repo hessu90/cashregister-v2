@@ -810,6 +810,7 @@ public class AddProduct extends javax.swing.JDialog {
                         JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(main, "Korttivirhe, yritä uudelleen...", "Korttivirhe", 2);
+            return;
         }
         this.exitbutActionPerformed(evt);
 
