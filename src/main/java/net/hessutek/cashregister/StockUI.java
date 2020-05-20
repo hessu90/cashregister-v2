@@ -27,14 +27,17 @@ public class StockUI extends javax.swing.JDialog {
     private boolean shift;
     private DBHandler db;
     private ErrorMsg errHandler;
+    private boolean isAdmin;
 
-    public StockUI(java.awt.Frame parent, boolean modal) {
+    public StockUI(java.awt.Frame parent, boolean modal, boolean isAdmin) {
         super(parent, modal);
+        this.isAdmin = isAdmin;
         initComponents();
         this.db = new DBHandler("MainDB.db");
-        this.name.requestFocus();
+        this.EAN.requestFocus();
         this.shift = true;
         this.errHandler = new ErrorMsg(this);
+        
     }
 
     /**
@@ -109,6 +112,7 @@ public class StockUI extends javax.swing.JDialog {
         emptyBut = new javax.swing.JButton();
         exitBut = new javax.swing.JButton();
         saveBut = new javax.swing.JButton();
+        removeBut = new javax.swing.JButton();
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -506,7 +510,7 @@ public class StockUI extends javax.swing.JDialog {
                 .addGroup(buttonsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(buttonsLayout.createSequentialGroup()
                         .addComponent(jButton52, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(10, 10, 10)
                         .addComponent(jButton53, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(backspace, javax.swing.GroupLayout.DEFAULT_SIZE, 68, Short.MAX_VALUE))
@@ -617,6 +621,7 @@ public class StockUI extends javax.swing.JDialog {
 
         jLabel2.setText("SKU");
 
+        SKU.setEnabled(false);
         SKU.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 focusGainedTextField(evt);
@@ -629,7 +634,7 @@ public class StockUI extends javax.swing.JDialog {
             }
         });
 
-        jLabel3.setText("N imike / tuotenimi");
+        jLabel3.setText("Nimike / tuotenimi");
 
         jLabel4.setText("Ostohinta");
 
@@ -747,7 +752,9 @@ public class StockUI extends javax.swing.JDialog {
             }
         });
 
-        saveBut.setText("Tallenna");
+        saveBut.setText("Tallenna / lisää varastoon");
+
+        removeBut.setText("Tallenna / poista varastosta");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -757,19 +764,22 @@ public class StockUI extends javax.swing.JDialog {
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(searchBut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(emptyBut, javax.swing.GroupLayout.DEFAULT_SIZE, 179, Short.MAX_VALUE)
-                    .addComponent(exitBut, javax.swing.GroupLayout.DEFAULT_SIZE, 179, Short.MAX_VALUE)
-                    .addComponent(saveBut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(emptyBut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(exitBut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(saveBut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(removeBut, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap()
                 .addComponent(searchBut, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(saveBut, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(removeBut, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(emptyBut, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(exitBut, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -781,13 +791,14 @@ public class StockUI extends javax.swing.JDialog {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(buttons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(buttons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -798,6 +809,10 @@ public class StockUI extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(buttons, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
+
+        if (!this.isAdmin) {
+            lockFields(this.isAdmin);
+        }
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -881,8 +896,8 @@ public class StockUI extends javax.swing.JDialog {
     private void searchButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButActionPerformed
         
         long EAN = 0;
-        if (this.EAN.getText().isEmpty() && this.SKU.getText().isEmpty()) {
-            errHandler.showErr("EAN ja SKU on tyhjä", "EAN / SKU virhe");
+        if (this.EAN.getText().isEmpty()) {
+            errHandler.showErr("EAN on tyhjä", "EAN-virhe");
             return;
         }
         
@@ -894,12 +909,24 @@ public class StockUI extends javax.swing.JDialog {
             return;
         }
         
+        
         Product product = db.getProductFromStock(EAN);
-        
-        
-        
+        if(product == null) {
+            System.out.println("Nulli product");
+            return;
+        }
+        this.SKU.setText(product.getSKU() + "");
+        this.SellPrice.setText(product.getPrice().toString());
+        this.name.setText(product.getProductName());
+        this.quan.setText(0 + "");
     }//GEN-LAST:event_searchButActionPerformed
 
+    
+    private void lockFields(boolean lock) {
+        this.name.setEnabled(lock);
+        this.SellPrice.setEnabled(lock);
+        this.removeBut.setEnabled(lock);
+    }
     /**
      * @param args the command line arguments
      */
@@ -996,6 +1023,7 @@ public class StockUI extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JTextField name;
     private javax.swing.JTextField quan;
+    private javax.swing.JButton removeBut;
     private javax.swing.JButton saveBut;
     private javax.swing.JButton searchBut;
     private javax.swing.JButton shiftbut;

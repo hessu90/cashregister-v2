@@ -74,25 +74,48 @@ public class DBHandler {
 
     public Product getProduct(long EAN) {
         long SKU = this.getSKU(EAN);
-        
+
         if (this.getProductName(SKU) == null) {
             return null;
         } else {
-            return new Product(this.getProductName(SKU), this.getPrice(EAN), 0);
+            return new Product(this.getProductName(SKU), this.getPrice(EAN), 0, SKU);
         }
     }
-    
+
     public Product getProductFromStock(long EAN) {
-        long SKU = getSKU(EAN);
-        Product product = getProduct(EAN);
-        product.setQuan(getStockAmount(SKU));
         
+        if (getSKU(EAN) == EAN) {
+            return null;
+        }
+        
+        Product product = getProduct(EAN);
+        
+        if (product == null) {
+            return null;
+        }
+        long SKU = product.getSKU();
+        try {
+            product.setQuan(getStockAmount(SKU));
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            product = null;
+        }
+
         return product;
     }
-    
-    public int getStockAmount(long SKU) {
+
+    public int getStockAmount(long SKU) throws SQLException {
+        String sql = "SELECT InStock FROM Stock WHERE SKU=?";
+        int quan = 0;
+        Connection conn = this.connect();
+        PreparedStatement pstmt = conn.prepareStatement(sql);
         
-        return -1;
+
+        pstmt.setLong(1, SKU);
+        ResultSet rs = pstmt.executeQuery();
+
+        quan = rs.getInt("InStock");
+        return quan;
     }
 
     public Price getPrice(long EAN) {

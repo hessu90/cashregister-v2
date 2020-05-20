@@ -555,7 +555,7 @@ public class MainWindow extends javax.swing.JFrame {
 
     private void stockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stockActionPerformed
       
-        JDialog dlg = new StockUI(this, true);
+        JDialog dlg = new StockUI(this, true, false);
 
         if (!System.getProperty("os.name").toLowerCase().contains("windows")) {
             dlg.setSize(Toolkit.getDefaultToolkit().getScreenSize());

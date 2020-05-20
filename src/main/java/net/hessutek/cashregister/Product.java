@@ -14,12 +14,21 @@ public class Product {
     private String productName;
     private Price price;
     private int quan;
+    private long SKU;
 
     public Product(String productName, Price price, int quan) {
         this.productName = productName;
         this.price = price;
         this.quan = quan;
     }
+
+    public Product(String productName, Price price, int quan, long SKU) {
+        this.productName = productName;
+        this.price = price;
+        this.quan = quan;
+        this.SKU = SKU;
+    }
+    
 
     public Price getPrice() {
         return price;
@@ -40,6 +49,11 @@ public class Product {
     public void setQuan(int quan) {
         this.quan = quan;
     }
+
+    public long getSKU() {
+        return this.SKU;
+    }
+    
 
     @Override
     public String toString() {
