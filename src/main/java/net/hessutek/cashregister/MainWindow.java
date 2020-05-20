@@ -424,8 +424,6 @@ public class MainWindow extends javax.swing.JFrame {
         this.addproduct.setEnabled(false);
         this.warnings.setText("");
 
-        
-
         long EAN = 0;
 
         try {
@@ -435,13 +433,13 @@ public class MainWindow extends javax.swing.JFrame {
             return;
         }
 
-        String product = db.getProduct(EAN);
+        Product product = db.getProduct(EAN);
         if (product == null) {
             this.warnings.setText("PRODUCT NO FOUND");
             this.addproduct.setEnabled(true);
             return;
         }
-        Price price = db.getPrice(EAN);
+        Price price = product.getPrice();
         int quan = 1;
 
         try {
@@ -453,8 +451,9 @@ public class MainWindow extends javax.swing.JFrame {
 
         Price sum = new Price(0, 0);
         System.out.println(sum);
-
-        productList.add(new Product(product, price, quan));
+        
+        product.setQuan(quan);
+        productList.add(product);
 
         DefaultListModel<String> dlm = new DefaultListModel<String>();
         ListModel<String> model = this.products.getModel();
@@ -522,7 +521,7 @@ public class MainWindow extends javax.swing.JFrame {
         if (this.EAN.getText().contains("999")) {
             System.exit(0);
         }
-        
+
         mw = new ExecuteCommand();
         CardDlg cardDlg = new CardDlg(this, true, mw);
         cardDlg.setVisible(true);
@@ -533,7 +532,7 @@ public class MainWindow extends javax.swing.JFrame {
             id = 0;
             return;
         }
-        
+
         if (db.getPrivilege(id) != 999) {
             JOptionPane.showMessageDialog(this,
                     "Ei oikeuksia admin paneeliin :(",
@@ -541,9 +540,7 @@ public class MainWindow extends javax.swing.JFrame {
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
-        
-        
+
         JDialog dlg = new UserHandlerDlg(this, true);
         if (!System.getProperty("os.name").toLowerCase().contains("windows")) {
             dlg.setSize(Toolkit.getDefaultToolkit().getScreenSize());
@@ -557,7 +554,18 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_adminActionPerformed
 
     private void stockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stockActionPerformed
+      
+        JDialog dlg = new StockUI(this, true);
 
+        if (!System.getProperty("os.name").toLowerCase().contains("windows")) {
+            dlg.setSize(Toolkit.getDefaultToolkit().getScreenSize());
+        }
+        dlg.setVisible(true);
+
+        this.addproduct.setEnabled(false);
+        this.EAN.setText("");
+        this.warnings.setText("");
+        this.EAN.requestFocus();
 
     }//GEN-LAST:event_stockActionPerformed
 

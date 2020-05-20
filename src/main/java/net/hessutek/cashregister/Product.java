@@ -36,6 +36,10 @@ public class Product {
     public Price getTotalPrice() {
         return this.price.multiply(this.quan);
     }
+    
+    public void setQuan(int quan) {
+        this.quan = quan;
+    }
 
     @Override
     public String toString() {

@@ -72,10 +72,27 @@ public class DBHandler {
         return tuote;
     }
 
-    public String getProduct(long EAN) {
+    public Product getProduct(long EAN) {
         long SKU = this.getSKU(EAN);
-        return this.getProductName(SKU);
-
+        
+        if (this.getProductName(SKU) == null) {
+            return null;
+        } else {
+            return new Product(this.getProductName(SKU), this.getPrice(EAN), 0);
+        }
+    }
+    
+    public Product getProductFromStock(long EAN) {
+        long SKU = getSKU(EAN);
+        Product product = getProduct(EAN);
+        product.setQuan(getStockAmount(SKU));
+        
+        return product;
+    }
+    
+    public int getStockAmount(long SKU) {
+        
+        return -1;
     }
 
     public Price getPrice(long EAN) {
@@ -183,44 +200,94 @@ public class DBHandler {
     public boolean saveProductData(long EAN, String productName, Price purchPrice, Price sellPrice) {
 
         String sql = "INSERT INTO Products(ProductName, PurchacePrice, Price) VALUES(?,?,?)";
-        String sqlEAN = "INSERT INTO EAN(SKU, EAN) VALUES(?,?)";
+
         long SKU = 0;
         double pPrice = Double.parseDouble(purchPrice.toString());
         double sPrice = Double.parseDouble(sellPrice.toString());
-        
-        
-        try ( Connection conn = this.connect();  
-                PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+        try ( Connection conn = this.connect();  PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, productName);
             pstmt.setDouble(2, pPrice);
             pstmt.setDouble(3, sPrice);
             pstmt.executeUpdate();
             ResultSet rs = pstmt.getGeneratedKeys();
             SKU = rs.getLong(1);
-            
-        } catch(SQLException ex) {
+
+        } catch (SQLException ex) {
             System.out.println(ex.getMessage());
             SKU = -1;
         }
-        
+
         if (SKU == -1) {
             return false;
         }
-        
-        try ( Connection conn = this.connect();  
-                PreparedStatement pstmt = conn.prepareStatement(sqlEAN, Statement.RETURN_GENERATED_KEYS)) {
+        if (!addEANToDB(SKU, EAN) || !addProductToStock(SKU)) {
+            deleteFromProducts(SKU);
+            deleteFromEAN(SKU);
+            return false;
+        }
+        return true;
+
+    }
+
+    private boolean addEANToDB(long SKU, long EAN) {
+        String sqlEAN = "INSERT INTO EAN(SKU, EAN) VALUES(?,?)";
+
+        try ( Connection conn = this.connect();  PreparedStatement pstmt = conn.prepareStatement(sqlEAN)) {
             pstmt.setLong(1, SKU);
             pstmt.setLong(2, EAN);
             pstmt.executeUpdate();
-            
-        } catch(SQLException ex) {
+
+        } catch (SQLException ex) {
             System.out.println(ex.getMessage());
             return false;
         }
-        
         return true;
     }
-    
-    
+
+    private boolean addProductToStock(long SKU) {
+        String sqlEAN = "INSERT INTO Stock(SKU, InStock) VALUES(?,?)";
+
+        try ( Connection conn = this.connect();  PreparedStatement pstmt = conn.prepareStatement(sqlEAN)) {
+            pstmt.setLong(1, SKU);
+            pstmt.setInt(2, 0);
+            pstmt.executeUpdate();
+
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean deleteFromProducts(long SKU) {
+        String sql = "DELETE FROM Products WHERE SKU = ?";
+        try ( Connection conn = this.connect();  PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, SKU);
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    private boolean deleteFromEAN(long EAN) {
+
+        String sql = "DELETE FROM EAN WHERE SKU = ?";
+        try ( Connection conn = this.connect();  PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setLong(1, EAN);
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+        return true;
+    }
 
 }

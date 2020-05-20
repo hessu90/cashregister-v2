@@ -116,6 +116,11 @@ public class AddProduct extends javax.swing.JDialog {
                 focusGainedField(evt);
             }
         });
+        productName.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                productNameActionPerformed(evt);
+            }
+        });
 
         jLabel2.setText("Nimike / tuotenimi");
 
@@ -815,6 +820,10 @@ public class AddProduct extends javax.swing.JDialog {
         this.exitbutActionPerformed(evt);
 
     }//GEN-LAST:event_savebutActionPerformed
+
+    private void productNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_productNameActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_productNameActionPerformed
 
     /**
      * @param args the command line arguments

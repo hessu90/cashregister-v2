@@ -16,7 +16,11 @@ public class ConsoleMain {
      */
     public static void main(String[] args) {
         DBHandler db = new DBHandler("MainDB.db");
-        db.saveProductData(1234, "kissa", new Price(12,12), new Price(99,99));
+        System.out.println(db.saveProductData(123445, "kissa", new Price(12,12), new Price(99,99)));
+        System.out.println(db.saveProductData(12344, "kissa", new Price(12,12), new Price(99,99)));
+        System.out.println(db.saveProductData(1235, "kissa", new Price(12,12), new Price(99,99)));
+        System.out.println(db.saveProductData(1445, "kissa", new Price(12,12), new Price(99,99)));
+        
         
     }
     
