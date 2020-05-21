@@ -15,29 +15,32 @@ import java.util.ArrayList;
 public class DBHandler {
 
     private String dbPath;
+    private Connection conn;
 
     public DBHandler(String dbName) {
         this.dbPath = dbName;
+        this.conn = connect();
     }
 
     public Connection connect() {
-        Connection conn = null;
+        this.conn = null;
 
         try {
-
             String url = "jdbc:sqlite:" + this.dbPath;
             conn = DriverManager.getConnection(url);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
-
         return conn;
     }
+    
+    
 
     public long getSKU(long EAN) {
         String sql = "SELECT SKU FROM EAN WHERE EAN=?";
         long SKU = 0;
-        try ( Connection conn = this.connect();  PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        
+        try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
 
             pstmt.setLong(1, EAN);
             ResultSet rs = pstmt.executeQuery();
@@ -59,7 +62,7 @@ public class DBHandler {
     public String getProductName(long SKU) {
         String sql = "SELECT ProductName FROM Products WHERE SKU=?";
         String tuote = null;
-        try ( Connection conn = this.connect();  PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
 
             pstmt.setLong(1, SKU);
             ResultSet rs = pstmt.executeQuery();
@@ -107,8 +110,8 @@ public class DBHandler {
     public int getStockAmount(long SKU) throws SQLException {
         String sql = "SELECT InStock FROM Stock WHERE SKU=?";
         int quan = 0;
-        Connection conn = this.connect();
-        PreparedStatement pstmt = conn.prepareStatement(sql);
+        
+        PreparedStatement pstmt = this.conn.prepareStatement(sql);
         
 
         pstmt.setLong(1, SKU);
@@ -122,7 +125,7 @@ public class DBHandler {
         long SKU = this.getSKU(EAN);
         String sql = "SELECT Price FROM Products WHERE SKU=?";
         Double price = 0.00;
-        try ( Connection conn = this.connect();  PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
 
             pstmt.setLong(1, SKU);
             ResultSet rs = pstmt.executeQuery();
@@ -139,7 +142,7 @@ public class DBHandler {
         String sql = "SELECT Name FROM Users WHERE CardNo=?";
         String userName = "";
 
-        try ( Connection conn = this.connect();  PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
             pstmt.setLong(1, cardNo);
             ResultSet rs = pstmt.executeQuery();
             userName = rs.getString("Name");
@@ -156,7 +159,7 @@ public class DBHandler {
         String sql = "SELECT * FROM Groups";
         ArrayList<String> groups = new ArrayList<>();
 
-        try ( Connection conn = this.connect();  Statement stmt = conn.createStatement();  ResultSet rs = stmt.executeQuery(sql)) {
+        try (Statement stmt = conn.createStatement();  ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
                 groups.add(rs.getString("Privilege") + " -- " + rs.getString("GroupName"));
             }
@@ -175,7 +178,7 @@ public class DBHandler {
             sql = "UPDATE Users SET Name = ? , GroupID = ? WHERE CardNo = ?";
         }
 
-        try ( Connection conn = this.connect();  PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
             pstmt.setString(1, userName);
             pstmt.setInt(2, groupID);
             pstmt.setLong(3, cardNo);
@@ -191,7 +194,7 @@ public class DBHandler {
     public int getUserGroup(long cardNo) {
         int groupID = -1;
         String sql = "SELECT GroupID FROM Users WHERE CardNo=?";
-        try ( Connection conn = this.connect();  PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
             pstmt.setLong(1, cardNo);
             ResultSet rs = pstmt.executeQuery();
             groupID = rs.getInt("GroupID");
@@ -207,7 +210,7 @@ public class DBHandler {
         int privilegeNo = -1;
 
         String sql = "SELECT Privilege FROM Groups, Users WHERE Users.CardNo=? AND Users.GroupID=Groups.ID";
-        try ( Connection conn = this.connect();  PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
             pstmt.setLong(1, cardNo);
             ResultSet rs = pstmt.executeQuery();
             privilegeNo = rs.getInt("Privilege");
@@ -220,7 +223,7 @@ public class DBHandler {
 
     }
 
-    public boolean saveProductData(long EAN, String productName, Price purchPrice, Price sellPrice) {
+    public boolean saveProductData(long EAN, String productName, Price purchPrice, Price sellPrice, int quan) {
 
         String sql = "INSERT INTO Products(ProductName, PurchacePrice, Price) VALUES(?,?,?)";
 
@@ -228,7 +231,7 @@ public class DBHandler {
         double pPrice = Double.parseDouble(purchPrice.toString());
         double sPrice = Double.parseDouble(sellPrice.toString());
 
-        try ( Connection conn = this.connect();  PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement pstmt = this.conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, productName);
             pstmt.setDouble(2, pPrice);
             pstmt.setDouble(3, sPrice);
@@ -244,7 +247,7 @@ public class DBHandler {
         if (SKU == -1) {
             return false;
         }
-        if (!addEANToDB(SKU, EAN) || !addProductToStock(SKU)) {
+        if (!addEANToDB(SKU, EAN) || !addProductToStock(SKU, quan)) {
             deleteFromProducts(SKU);
             deleteFromEAN(SKU);
             return false;
@@ -256,7 +259,7 @@ public class DBHandler {
     private boolean addEANToDB(long SKU, long EAN) {
         String sqlEAN = "INSERT INTO EAN(SKU, EAN) VALUES(?,?)";
 
-        try ( Connection conn = this.connect();  PreparedStatement pstmt = conn.prepareStatement(sqlEAN)) {
+        try (PreparedStatement pstmt = this.conn.prepareStatement(sqlEAN)) {
             pstmt.setLong(1, SKU);
             pstmt.setLong(2, EAN);
             pstmt.executeUpdate();
@@ -268,12 +271,12 @@ public class DBHandler {
         return true;
     }
 
-    private boolean addProductToStock(long SKU) {
+    private boolean addProductToStock(long SKU, int quan) {
         String sqlEAN = "INSERT INTO Stock(SKU, InStock) VALUES(?,?)";
-
-        try ( Connection conn = this.connect();  PreparedStatement pstmt = conn.prepareStatement(sqlEAN)) {
+        
+        try (PreparedStatement pstmt = this.conn.prepareStatement(sqlEAN)) {
             pstmt.setLong(1, SKU);
-            pstmt.setInt(2, 0);
+            pstmt.setInt(2, quan);
             pstmt.executeUpdate();
 
         } catch (SQLException ex) {
@@ -286,7 +289,7 @@ public class DBHandler {
 
     private boolean deleteFromProducts(long SKU) {
         String sql = "DELETE FROM Products WHERE SKU = ?";
-        try ( Connection conn = this.connect();  PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
 
             pstmt.setLong(1, SKU);
             pstmt.executeUpdate();
@@ -301,7 +304,7 @@ public class DBHandler {
     private boolean deleteFromEAN(long EAN) {
 
         String sql = "DELETE FROM EAN WHERE SKU = ?";
-        try ( Connection conn = this.connect();  PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
 
             pstmt.setLong(1, EAN);
             pstmt.executeUpdate();

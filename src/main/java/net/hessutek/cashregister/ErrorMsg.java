@@ -24,4 +24,8 @@ public class ErrorMsg {
         JOptionPane.showMessageDialog(window, msg, header, JOptionPane.ERROR_MESSAGE);
     }
     
+    public void showMsg(String msg, String header) {
+        JOptionPane.showMessageDialog(window, msg, header, JOptionPane.INFORMATION_MESSAGE);
+    }
+    
 }

@@ -836,6 +836,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Tallenna / lis&#xe4;&#xe4; varastoon"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="saveButActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="removeBut">
           <Properties>

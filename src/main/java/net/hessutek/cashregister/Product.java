@@ -12,26 +12,34 @@ package net.hessutek.cashregister;
 public class Product {
 
     private String productName;
-    private Price price;
+    private Price sPrice, pPrice;
     private int quan;
     private long SKU;
 
-    public Product(String productName, Price price, int quan) {
+    public Product(String productName, Price sPrice, int quan) {
         this.productName = productName;
-        this.price = price;
+        this.sPrice = sPrice;
         this.quan = quan;
     }
 
-    public Product(String productName, Price price, int quan, long SKU) {
+    public Product(String productName, Price sPrice, int quan, long SKU) {
         this.productName = productName;
-        this.price = price;
+        this.sPrice = sPrice;
+        this.quan = quan;
+        this.SKU = SKU;
+    }
+    
+    public Product(String productName, Price sPrice, Price pPrice,  int quan, long SKU) {
+        this.productName = productName;
+        this.sPrice = sPrice;
+        this.pPrice = pPrice;
         this.quan = quan;
         this.SKU = SKU;
     }
     
 
     public Price getPrice() {
-        return price;
+        return sPrice;
     }
 
     public String getProductName() {
@@ -43,7 +51,7 @@ public class Product {
     }
     
     public Price getTotalPrice() {
-        return this.price.multiply(this.quan);
+        return this.sPrice.multiply(this.quan);
     }
     
     public void setQuan(int quan) {
@@ -57,7 +65,7 @@ public class Product {
 
     @Override
     public String toString() {
-        return this.quan + " * (" + this.price + ")" + " == " + this.getTotalPrice() + " -- " + this.productName;
+        return this.quan + " * (" + this.sPrice + ")" + " == " + this.getTotalPrice() + " -- " + this.productName;
     }
     
 }

@@ -37,7 +37,7 @@ public class StockUI extends javax.swing.JDialog {
         this.EAN.requestFocus();
         this.shift = true;
         this.errHandler = new ErrorMsg(this);
-        
+
     }
 
     /**
@@ -753,6 +753,11 @@ public class StockUI extends javax.swing.JDialog {
         });
 
         saveBut.setText("Tallenna / lisää varastoon");
+        saveBut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveButActionPerformed(evt);
+            }
+        });
 
         removeBut.setText("Tallenna / poista varastosta");
 
@@ -894,13 +899,13 @@ public class StockUI extends javax.swing.JDialog {
     }//GEN-LAST:event_EANFocusLost
 
     private void searchButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchButActionPerformed
-        
+
         long EAN = 0;
         if (this.EAN.getText().isEmpty()) {
             errHandler.showErr("EAN on tyhjä", "EAN-virhe");
             return;
         }
-        
+
         try {
             EAN = Long.parseLong(this.EAN.getText());
         } catch (NumberFormatException e) {
@@ -908,25 +913,98 @@ public class StockUI extends javax.swing.JDialog {
             errHandler.showErr("Virheellinen EAN", "EAN-virhe");
             return;
         }
-        
-        
+
         Product product = db.getProductFromStock(EAN);
-        if(product == null) {
-            System.out.println("Nulli product");
-            return;
+        if (product == null) {
+            if (!isAdmin) {
+                errHandler.showErr("Tuotetta ei löytynyt ja ei oikeuksia lisätä tuotteita", "Tuote virhe");
+                return;
+            }
+            product = new Product("", new Price(0, 0), 1);
         }
         this.SKU.setText(product.getSKU() + "");
         this.SellPrice.setText(product.getPrice().toString());
         this.name.setText(product.getProductName());
         this.quan.setText(0 + "");
+        this.name.requestFocus();
     }//GEN-LAST:event_searchButActionPerformed
 
-    
+    private void saveButActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButActionPerformed
+        if (!checkFields()) return;
+        
+        
+        long EAN = Long.parseLong(this.EAN.getText());
+        
+        Product product = db.getProductFromStock(EAN);
+        if (product == null) {
+            product = new Product(this.name.getText(), 
+                    new Price(Double.parseDouble(SellPrice.getText())), 
+                    new Price(Double.parseDouble(PurchacePrice.getText())),
+                    0, 0);
+        }
+        int quan = product.getQuan() + Integer.parseInt(this.quan.getText());
+        Price purchPrice = new Price(Double.parseDouble(this.PurchacePrice.getText()));
+        Price sellPrice = new Price(Double.parseDouble(this.SellPrice.getText()));
+        
+        
+        db.saveProductData(EAN, this.name.getText(), purchPrice, sellPrice, quan);
+        
+        errHandler.showMsg("Tallennettu", "Tallennus");
+        
+        
+    }//GEN-LAST:event_saveButActionPerformed
+
     private void lockFields(boolean lock) {
         this.name.setEnabled(lock);
         this.SellPrice.setEnabled(lock);
         this.removeBut.setEnabled(lock);
     }
+
+    private boolean checkEmptyField(JTextField jField) {
+        return jField.getText().isEmpty();
+    }
+
+    private boolean checkFields() {
+        if (checkEmptyField(EAN)) {
+            errHandler.showErr("EAN ei voi olla tyhjä", "EAN virhe");
+            return false;
+        } else if (checkEmptyField(name)) {
+            errHandler.showErr("Nimi kenttä ei voi olla tyhjä", "Nimi virhe");
+            return false;
+        } else if (checkEmptyField(PurchacePrice) || !checkPrice(PurchacePrice)) {
+            errHandler.showErr("Ostohinta ei voi olla tyhjä/nolla", "Hintavirhe");
+            return false;
+        } else if (checkEmptyField(SellPrice) || !checkPrice(SellPrice)) {
+            errHandler.showErr("Myyntihinta ei voi olla tyhjä", "Hintavirhe");
+            return false;
+        } else if (!checkQuan(this.quan)) {
+            errHandler.showErr("Määrä virhe", "Määrä virhe");
+            return false;
+        }
+        return true;
+    }
+    
+    private boolean checkPrice(JTextField jField) {
+        Price price;
+        try {
+            price = new Price(Double.parseDouble(jField.getText()));
+        } catch (NumberFormatException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+        return !(price.eur() == 0 && price.sent() == 0);
+    }
+    
+    private boolean checkQuan(JTextField jField) {
+        try {
+            Integer.parseInt(jField.getText());
+        } catch (NumberFormatException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
     /**
      * @param args the command line arguments
      */
