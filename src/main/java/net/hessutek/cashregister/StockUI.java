@@ -28,8 +28,9 @@ public class StockUI extends javax.swing.JDialog {
     private DBHandler db;
     private ErrorMsg errHandler;
     private boolean isAdmin;
+    private int userID;
 
-    public StockUI(java.awt.Frame parent, boolean modal, boolean isAdmin) {
+    public StockUI(java.awt.Frame parent, boolean modal, boolean isAdmin, int userID) {
         super(parent, modal);
         this.isAdmin = isAdmin;
         initComponents();
@@ -37,7 +38,7 @@ public class StockUI extends javax.swing.JDialog {
         this.EAN.requestFocus();
         this.shift = true;
         this.errHandler = new ErrorMsg(this);
-
+        this.userID = userID;
     }
 
     /**
@@ -948,7 +949,10 @@ public class StockUI extends javax.swing.JDialog {
         Price sellPrice = new Price(Double.parseDouble(this.SellPrice.getText()));
         
         
-        db.saveProductData(EAN, this.name.getText(), purchPrice, sellPrice, quan);
+        if (!db.saveProductData(EAN, this.name.getText(), purchPrice, sellPrice, quan, this.userID)) {
+            errHandler.showErr("Virhe tallennuksessa", "Tallennus virhe");
+            return;
+        }
         
         errHandler.showMsg("Tallennettu", "Tallennus");
         emptyButActionPerformed(evt);

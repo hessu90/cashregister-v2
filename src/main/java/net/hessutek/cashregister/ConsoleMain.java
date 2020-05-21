@@ -16,7 +16,7 @@ public class ConsoleMain {
      */
     public static void main(String[] args) {
         DBHandler db = new DBHandler("MainDB.db");
-        System.out.println(db.saveProductData(1445, "kissa3", new Price(0,0), new Price(1, 0), 0));
+        Product product = new Product("kissa", new Price(1,2), new Price(1,2), 0, 0);
         
     }
     

@@ -808,7 +808,7 @@ public class AddProduct extends javax.swing.JDialog {
                 this.exitbutActionPerformed(evt);
                 return;
             }
-            db.saveProductData(Long.parseLong(EAN.getText()), productName.getText(), pPrice, sPrice, 0);
+            db.saveProductData(Long.parseLong(EAN.getText()), productName.getText(), pPrice, sPrice, 0, 1);
             JOptionPane.showMessageDialog(this,
                         "Tuote lisätty :)",
                         "Tallennettu",
