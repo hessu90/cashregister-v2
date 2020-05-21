@@ -38,9 +38,14 @@ public class Product {
     }
     
 
-    public Price getPrice() {
+    public Price getsPrice() {
         return sPrice;
     }
+
+    public Price getpPrice() {
+        return pPrice;
+    }
+    
 
     public String getProductName() {
         return productName;

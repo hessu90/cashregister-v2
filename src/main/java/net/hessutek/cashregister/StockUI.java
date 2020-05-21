@@ -920,10 +920,11 @@ public class StockUI extends javax.swing.JDialog {
                 errHandler.showErr("Tuotetta ei löytynyt ja ei oikeuksia lisätä tuotteita", "Tuote virhe");
                 return;
             }
-            product = new Product("", new Price(0, 0), 1);
+            product = new Product("", new Price(0, 0), new Price(0, 0), 1, 0);
         }
         this.SKU.setText(product.getSKU() + "");
-        this.SellPrice.setText(product.getPrice().toString());
+        this.PurchacePrice.setText(product.getpPrice().toString());
+        this.SellPrice.setText(product.getsPrice().toString());
         this.name.setText(product.getProductName());
         this.quan.setText(0 + "");
         this.name.requestFocus();
@@ -950,6 +951,7 @@ public class StockUI extends javax.swing.JDialog {
         db.saveProductData(EAN, this.name.getText(), purchPrice, sellPrice, quan);
         
         errHandler.showMsg("Tallennettu", "Tallennus");
+        emptyButActionPerformed(evt);
         
         
     }//GEN-LAST:event_saveButActionPerformed

@@ -439,7 +439,7 @@ public class MainWindow extends javax.swing.JFrame {
             this.addproduct.setEnabled(true);
             return;
         }
-        Price price = product.getPrice();
+        Price price = product.getsPrice();
         int quan = 1;
 
         try {
