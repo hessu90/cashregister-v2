@@ -189,6 +189,24 @@ public class DBHandler {
         this.close();
         return userName;
     }
+    
+    public int getUserID(long cardNo) {
+        this.connect();
+        String sql = "SELECT ID FROM Users WHERE CardNo=?";
+        int userID = 0;
+        
+        try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
+            pstmt.setLong(1, cardNo);
+            ResultSet rs = pstmt.executeQuery();
+            userID = rs.getInt("ID");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage() + " " + e.getClass());
+            userID = -1;
+        }
+        
+        return userID;
+    }
+    
 
     public ArrayList<String> getGroups() {
         this.connect();

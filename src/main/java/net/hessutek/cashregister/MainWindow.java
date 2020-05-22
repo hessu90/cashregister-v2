@@ -26,6 +26,7 @@ public class MainWindow extends javax.swing.JFrame {
     private ArrayList<Product> productList;
     private ExecuteCommand mw;
     private DBHandler db;
+    private ErrorMsg errHandler;
 
     public MainWindow() {
         initComponents();
@@ -451,7 +452,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         Price sum = new Price(0, 0);
         System.out.println(sum);
-        
+
         product.setQuan(quan);
         productList.add(product);
 
@@ -554,8 +555,40 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_adminActionPerformed
 
     private void stockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stockActionPerformed
-        
-        JDialog dlg = new StockUI(this, true, true, 1);
+
+        mw = new ExecuteCommand();
+        CardDlg cardDlg = new CardDlg(this, true, mw);
+        cardDlg.setVisible(true);
+        long id;
+        try {
+            id = mw.get();
+        } catch (InterruptedException | ExecutionException | CancellationException ex) {
+            id = 0;
+        }
+        if (id == 0) {
+            JOptionPane.showMessageDialog(this,
+                    "Kortti virhe, kokeile uudestaan",
+                    "Kortti virhe",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int userID = db.getUserID(id);
+        if (userID == -1) {
+            JOptionPane.showMessageDialog(this,
+                    "Kortti virhe, kokeile uudestaan",
+                    "Kortti virhe",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        //long id = Long.parseLong("990390461325");
+        //int userID = 1;
+        int privilege = db.getPrivilege(id);
+        boolean isAdmin;
+        isAdmin = privilege == 999;
+
+        JDialog dlg = new StockUI(this, true, isAdmin, userID);
 
         if (!System.getProperty("os.name").toLowerCase().contains("windows")) {
             dlg.setSize(Toolkit.getDefaultToolkit().getScreenSize());

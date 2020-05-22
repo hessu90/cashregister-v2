@@ -973,18 +973,23 @@ public class StockUI extends javax.swing.JDialog {
     private boolean checkFields() {
         if (checkEmptyField(EAN)) {
             errHandler.showErr("EAN ei voi olla tyhjä", "EAN virhe");
+            this.EAN.requestFocus();
             return false;
         } else if (checkEmptyField(name)) {
             errHandler.showErr("Nimi kenttä ei voi olla tyhjä", "Nimi virhe");
+            this.name.requestFocus();
             return false;
         } else if (checkEmptyField(PurchacePrice) || !checkPrice(PurchacePrice)) {
             errHandler.showErr("Ostohinta ei voi olla tyhjä/nolla", "Hintavirhe");
+            this.PurchacePrice.requestFocus();
             return false;
         } else if (checkEmptyField(SellPrice) || !checkPrice(SellPrice)) {
             errHandler.showErr("Myyntihinta ei voi olla tyhjä", "Hintavirhe");
+            this.SellPrice.requestFocus();
             return false;
         } else if (!checkQuan(this.quan)) {
             errHandler.showErr("Määrä virhe", "Määrä virhe");
+            this.quan.requestFocus();
             return false;
         }
         return true;
