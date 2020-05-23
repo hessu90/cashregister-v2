@@ -5,6 +5,7 @@
  */
 package net.hessutek.cashregister;
 
+import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -28,19 +29,24 @@ public class Rfid {
 
     public Rfid() {
     }
-    
 
     public long read() {
 
         try {
             Runtime rt = Runtime.getRuntime();
-            Process proc = rt.exec("python3 " + pyPath);
+            Process proc;
+            if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+                proc = rt.exec("cmd /c C://Users//Lenovo//Documents//NetBeansProjects//cashregister-v2//Read.py");
+            } else {
+                proc = rt.exec("python3 " + pyPath);
+            }
+            
             Scanner scanner = new Scanner(new BufferedReader(new InputStreamReader(proc.getInputStream())));
             if (!scanner.hasNext(".*Error*")) {
                 id = Long.parseLong(scanner.next());
             }
-        } catch (IOException | NumberFormatException ex) {
-            System.out.println(ex.getMessage());
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
         return id;
 

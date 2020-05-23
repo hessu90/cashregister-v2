@@ -5,6 +5,11 @@
  */
 package net.hessutek.cashregister;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Scanner;
+
 /**
  *
  * @author Admin
@@ -14,10 +19,9 @@ public class ConsoleMain {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         DBHandler db = new DBHandler("MainDB.db");
-        Product product = new Product("kissa", new Price(1,2), new Price(1,2), 0, 0);
-        
+
+
     }
-    
 }

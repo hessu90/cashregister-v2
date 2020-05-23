@@ -19,7 +19,11 @@ public class ExecuteCommand extends SwingWorker<Long, Object> {
 
     @Override
     public Long doInBackground() {
-        return (new Rfid("Read.py").read());
+        if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+            return (new Rfid("C://Users/Lenovo/Documents/NetBeansProjects/cashregister-v2/Read.py").read());
+        } else {
+            return (new Rfid("Read.py").read());
+        }
     }
 
     @Override
