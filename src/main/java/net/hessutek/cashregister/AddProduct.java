@@ -818,6 +818,7 @@ public class AddProduct extends javax.swing.JDialog {
             return;
         }
         this.exitbutActionPerformed(evt);
+        
 
     }//GEN-LAST:event_savebutActionPerformed
 
