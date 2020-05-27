@@ -31,6 +31,7 @@ public class DBHandler {
             this.conn = DriverManager.getConnection(url);
         } catch (SQLException e) {
             System.out.println(e.getMessage() + " " + e.getClass());
+            e.printStackTrace();
         }
     }
 
@@ -39,6 +40,7 @@ public class DBHandler {
             this.conn.close();
         } catch (SQLException e) {
             System.out.println(e.getMessage() + " " + e.getClass());
+            e.printStackTrace();
         }
     }
 
@@ -51,11 +53,13 @@ public class DBHandler {
 
             pstmt.setLong(1, EAN);
             ResultSet rs = pstmt.executeQuery();
-
-            SKU = rs.getLong("SKU");
+            if (rs.next()) {
+                SKU = rs.getLong("SKU");
+            }
 
         } catch (SQLException e) {
             System.out.println(e.getMessage() + " " + e.getClass());
+            e.printStackTrace();
         }
         this.close();
 
@@ -75,11 +79,13 @@ public class DBHandler {
 
             pstmt.setLong(1, SKU);
             ResultSet rs = pstmt.executeQuery();
-
-            tuote = rs.getString("ProductName");
+            if (rs.next()) {
+                tuote = rs.getString("ProductName");
+            }
 
         } catch (SQLException e) {
             System.out.println(e.getMessage() + " " + e.getClass());
+            e.printStackTrace();
         }
         this.close();
         return tuote;
@@ -111,6 +117,7 @@ public class DBHandler {
             product.setQuan(getStockAmount(SKU));
         } catch (SQLException e) {
             System.out.println(e.getMessage() + " " + e.getClass());
+            e.printStackTrace();
             product = null;
         }
 
@@ -125,9 +132,12 @@ public class DBHandler {
         PreparedStatement pstmt = this.conn.prepareStatement(sql);
 
         pstmt.setLong(1, SKU);
-        ResultSet rs = pstmt.executeQuery();
 
-        quan = rs.getInt("InStock");
+        ResultSet rs = pstmt.executeQuery();
+        if (rs.next()) {
+            quan = rs.getInt("InStock");
+        }
+
         this.close();
 
         return quan;
@@ -144,9 +154,12 @@ public class DBHandler {
             pstmt.setLong(1, SKU);
             ResultSet rs = pstmt.executeQuery();
 
-            price = rs.getDouble("Price");
+            if (rs.next()) {
+                price = rs.getDouble("Price");
+            }
 
         } catch (SQLException e) {
+            e.printStackTrace();
             System.out.println(e.getMessage() + " " + e.getClass());
         }
         this.close();
@@ -164,9 +177,12 @@ public class DBHandler {
             pstmt.setLong(1, SKU);
             ResultSet rs = pstmt.executeQuery();
 
-            price = rs.getDouble("PurchacePrice");
+            if (rs.next()) {
+                price = rs.getDouble("PurchacePrice");
+            }
 
         } catch (SQLException e) {
+            e.printStackTrace();
             System.out.println(e.getMessage() + " " + e.getClass());
         }
         this.close();
@@ -181,32 +197,39 @@ public class DBHandler {
         try ( PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
             pstmt.setLong(1, cardNo);
             ResultSet rs = pstmt.executeQuery();
-            userName = rs.getString("Name");
+            if (rs.next()) {
+                userName = rs.getString("Name");
+            }
 
         } catch (SQLException e) {
+            e.printStackTrace();
             System.out.println(e.getMessage() + " " + e.getClass());
         }
         this.close();
         return userName;
     }
-    
+
     public int getUserID(long cardNo) {
         this.connect();
         String sql = "SELECT ID FROM Users WHERE CardNo=?";
         int userID = 0;
-        
-        try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
+
+        try ( PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
             pstmt.setLong(1, cardNo);
             ResultSet rs = pstmt.executeQuery();
-            userID = rs.getInt("ID");
+
+            if (rs.next()) {
+                userID = rs.getInt("ID");
+            }
+
         } catch (SQLException e) {
+            e.printStackTrace();
             System.out.println(e.getMessage() + " " + e.getClass());
             userID = -1;
         }
-        
+
         return userID;
     }
-    
 
     public ArrayList<String> getGroups() {
         this.connect();
@@ -218,6 +241,7 @@ public class DBHandler {
                 groups.add(rs.getString("Privilege") + " -- " + rs.getString("GroupName"));
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             System.out.println(e.getMessage() + " " + e.getClass());
         }
         this.close();
@@ -240,6 +264,7 @@ public class DBHandler {
             pstmt.setLong(3, cardNo);
             pstmt.executeUpdate();
         } catch (SQLException e) {
+            e.printStackTrace();
             System.out.println(e.getMessage() + " " + e.getClass());
             return false;
         }
@@ -254,9 +279,12 @@ public class DBHandler {
         try ( PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
             pstmt.setLong(1, cardNo);
             ResultSet rs = pstmt.executeQuery();
-            groupID = rs.getInt("GroupID");
+            if (rs.next()) {
+                groupID = rs.getInt("GroupID");
+            }
 
         } catch (SQLException e) {
+            e.printStackTrace();
             System.out.println(e.getMessage() + " " + e.getClass());
         }
         this.close();
@@ -271,9 +299,13 @@ public class DBHandler {
         try ( PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
             pstmt.setLong(1, cardNo);
             ResultSet rs = pstmt.executeQuery();
-            privilegeNo = rs.getInt("Privilege");
+
+            if (rs.next()) {
+                privilegeNo = rs.getInt("Privilege");
+            }
 
         } catch (SQLException e) {
+            e.printStackTrace();
             System.out.println(e.getMessage() + " " + e.getClass());
         }
         this.close();
@@ -281,10 +313,10 @@ public class DBHandler {
 
     }
 
-    public boolean saveProductData(long EAN, String productName, Price purchPrice, Price sellPrice, int quan, int userID) {
+    public boolean saveProductData(long EAN, String productName, Price purchPrice, Price sellPrice, int quan, int userID, int addQuan) {
 
         if (getSKU(EAN) != EAN) {
-            return updateProductData(new Product(productName, sellPrice, purchPrice, quan, EAN), getSKU(EAN));
+            return updateProductData(new Product(productName, sellPrice, purchPrice, quan, EAN), getSKU(EAN), addQuan);
         }
 
         String sql = "INSERT INTO Products(ProductName, PurchacePrice, Price) VALUES(?,?,?)";
@@ -303,6 +335,7 @@ public class DBHandler {
             SKU = rs.getLong(1);
 
         } catch (SQLException ex) {
+            ex.printStackTrace();
             System.out.println(ex.getMessage());
             SKU = -1;
         }
@@ -310,8 +343,8 @@ public class DBHandler {
         if (SKU == -1) {
             return false;
         }
-        Product product = new Product(productName, sellPrice, purchPrice, quan, EAN);
-        if (!addEANToDB(SKU, EAN) || !addProductToStock(SKU, quan) || !insertToStockHistory(product, SKU, userID)) {
+        Product product = new Product(productName, sellPrice, purchPrice, addQuan, EAN);
+        if (!addEANToDB(SKU, EAN) || !addProductToStock(SKU, quan) || !insertToStockHistory(product, SKU, userID, addQuan)) {
             deleteFromProducts(SKU);
             deleteFromEAN(SKU);
             deleteFromStock(SKU);
@@ -332,6 +365,7 @@ public class DBHandler {
             pstmt.executeUpdate();
 
         } catch (SQLException ex) {
+            ex.printStackTrace();
             System.out.println(ex.getMessage());
             return false;
         }
@@ -349,6 +383,7 @@ public class DBHandler {
             pstmt.executeUpdate();
 
         } catch (SQLException ex) {
+            ex.printStackTrace();
             System.out.println(ex.getMessage());
             return false;
         }
@@ -365,6 +400,7 @@ public class DBHandler {
             pstmt.executeUpdate();
 
         } catch (SQLException e) {
+            e.printStackTrace();
             System.out.println(e.getMessage() + " " + e.getClass());
             return false;
         }
@@ -381,6 +417,7 @@ public class DBHandler {
             pstmt.executeUpdate();
 
         } catch (SQLException e) {
+            e.printStackTrace();
             System.out.println(e.getMessage() + " " + e.getClass());
             return false;
         }
@@ -388,7 +425,7 @@ public class DBHandler {
         return true;
     }
 
-    private boolean updateProductData(Product product, long SKU) {
+    private boolean updateProductData(Product product, long SKU, int addQuan) {
         this.connect();
         String sqlUpdate = "UPDATE Products SET ProductName = ?, PurchacePrice = ?, "
                 + "Price = ? WHERE SKU = ?";
@@ -405,37 +442,56 @@ public class DBHandler {
             return false;
         }
         this.close();
-        return insertToStockHistory(product, SKU, 1);
+        return insertToStockHistory(product, SKU, 1, addQuan);
 
     }
 
     public boolean updateStock(Product product, long SKU) {
         this.connect();
+        String sqlUpdate = "UPDATE Stock SET InStock = ? WHERE SKU = ?";
 
+        try ( PreparedStatement pstmt = this.conn.prepareStatement(sqlUpdate)) {
+            pstmt.setInt(1, product.getQuan());
+            pstmt.setLong(2, SKU);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage() + " " + e.getClass());
+            return false;
+        }
         this.close();
         return true;
     }
 
-    public boolean insertToStockHistory(Product product, long SKU, int userID) {
+    public boolean insertToStockHistory(Product product, long SKU, int userID, int addQuan) {
         this.connect();
-
-        String sql = "INSERT INTO StockHistory (SKU, Pcs, Timestamp, UserID, PurchacePrice) VALUES(?,?,?,?,?)";
+        
+        String action;
+        if (product.getQuan() <0) {
+            action = "REMOVE";
+        } else {
+            action = "ADD";
+        }
+        
+        String sql = "INSERT INTO StockHistory (SKU, Pcs, Timestamp, UserID, PurchacePrice, Action) VALUES(?,?,?,?,?,?)";
         double pPrice = Double.parseDouble(product.getpPrice().toString());
-        try (PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
+        try ( PreparedStatement pstmt = this.conn.prepareStatement(sql)) {
             pstmt.setLong(1, SKU);
-            pstmt.setInt(2, product.getQuan());
+            pstmt.setInt(2, addQuan);
             pstmt.setLong(3, System.currentTimeMillis() / 1000L);
             pstmt.setInt(4, userID);
             pstmt.setDouble(5, pPrice);
+            pstmt.setString(6, action);
             pstmt.executeUpdate();
         } catch (SQLException e) {
+            e.printStackTrace();
             System.out.println(e.getMessage() + " " + e.getClass());
             this.close();
             return false;
         }
 
         this.close();
-        return true;
+        return updateStock(product, SKU);
     }
 
     private boolean deleteFromStock(long SKU) {
@@ -447,6 +503,7 @@ public class DBHandler {
             pstmt.executeUpdate();
 
         } catch (SQLException e) {
+            e.printStackTrace();
             System.out.println(e.getMessage() + " " + e.getClass());
             return false;
         }

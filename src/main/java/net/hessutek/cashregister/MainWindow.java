@@ -437,7 +437,8 @@ public class MainWindow extends javax.swing.JFrame {
         Product product = db.getProduct(EAN);
         if (product == null) {
             this.warnings.setText("PRODUCT NO FOUND");
-            this.addproduct.setEnabled(true);
+            this.EAN.setText("");
+            //this.addproduct.setEnabled(true);
             return;
         }
         Price price = product.getsPrice();

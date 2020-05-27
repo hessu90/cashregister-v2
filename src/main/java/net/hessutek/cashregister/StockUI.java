@@ -6,12 +6,7 @@
 package net.hessutek.cashregister;
 
 import java.awt.Component;
-import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 /**
@@ -949,7 +944,8 @@ public class StockUI extends javax.swing.JDialog {
         Price sellPrice = new Price(Double.parseDouble(this.SellPrice.getText()));
         
         
-        if (!db.saveProductData(EAN, this.name.getText(), purchPrice, sellPrice, quan, this.userID)) {
+        
+        if (!db.saveProductData(EAN, this.name.getText(), purchPrice, sellPrice, quan, this.userID, Integer.parseInt(this.quan.getText()))) {
             errHandler.showErr("Virhe tallennuksessa", "Tallennus virhe");
             return;
         }

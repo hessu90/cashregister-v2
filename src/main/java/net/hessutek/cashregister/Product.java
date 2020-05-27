@@ -28,15 +28,22 @@ public class Product {
         this.quan = quan;
         this.SKU = SKU;
     }
-    
-    public Product(String productName, Price sPrice, Price pPrice,  int quan, long SKU) {
+
+    public Product(String productName, Price sPrice, Price pPrice, int quan, long SKU) {
         this.productName = productName;
         this.sPrice = sPrice;
         this.pPrice = pPrice;
         this.quan = quan;
         this.SKU = SKU;
     }
-    
+
+    public Product(String productName, Price sPrice, Price pPrice, int quan, long SKU, int addQuan) {
+        this.productName = productName;
+        this.sPrice = sPrice;
+        this.pPrice = pPrice;
+        this.quan = quan;
+        this.SKU = SKU;
+    }
 
     public Price getsPrice() {
         return sPrice;
@@ -45,7 +52,6 @@ public class Product {
     public Price getpPrice() {
         return pPrice;
     }
-    
 
     public String getProductName() {
         return productName;
@@ -54,11 +60,11 @@ public class Product {
     public int getQuan() {
         return quan;
     }
-    
+
     public Price getTotalPrice() {
         return this.sPrice.multiply(this.quan);
     }
-    
+
     public void setQuan(int quan) {
         this.quan = quan;
     }
@@ -66,11 +72,10 @@ public class Product {
     public long getSKU() {
         return this.SKU;
     }
-    
 
     @Override
     public String toString() {
         return this.quan + " * (" + this.sPrice + ")" + " == " + this.getTotalPrice() + " -- " + this.productName;
     }
-    
+
 }

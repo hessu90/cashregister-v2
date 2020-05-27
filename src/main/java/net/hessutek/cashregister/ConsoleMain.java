@@ -21,7 +21,7 @@ public class ConsoleMain {
      */
     public static void main(String[] args) throws IOException {
         DBHandler db = new DBHandler("MainDB.db");
-
-
+        //db.getProductFromStock(14465);
+        
     }
 }
